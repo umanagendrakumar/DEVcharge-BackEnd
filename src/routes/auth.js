@@ -10,7 +10,7 @@ authRouter.post("/signup", async (req, res) => {
     try {
         const { firstName, lastName, emailId, password } = req.body;
 
-        const existingUser = await User.findOne({emailId});
+        const existingUser = await User.findOne({ emailId });
         if (existingUser) {
             return res.status(400).send("User with this email already exists");
         }
@@ -26,8 +26,12 @@ authRouter.post("/signup", async (req, res) => {
 
         const savedUser = await user.save();
         const token = await jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-        res.cookie("token", token);
-        res.json({message: "User added successfully", data: savedUser});
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
+        res.json({ message: "User added successfully", data: savedUser });
 
     } catch (err) {
         res.send("Error adding user: " + err.message);
@@ -47,7 +51,11 @@ authRouter.post("/login", async (req, res) => {
         if (isPasswordValid) {
 
             const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-            res.cookie("token", token);
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none"
+            });
             res.send(user);
 
         } else {
