@@ -46,7 +46,6 @@ requestRouter.post("/request/send/:status/:toId", userAuth, async (req, res) => 
         res.send(req.user.firstName + " " + status + " " + toUser.firstName);
     }
     catch (err) {
-
         res.status(500).send({ Error: err.message });
     }
 
