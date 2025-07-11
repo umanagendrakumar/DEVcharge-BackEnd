@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const cors = require("cors");
 
-const allowedOrigins = ["http://localhost:5173", "https://devcharge.netlify.app/"];
+const allowedOrigins = ["http://localhost:5173", "https://devcharge.netlify.app"];
 
 app.use(cors({
     origin: allowedOrigins,
