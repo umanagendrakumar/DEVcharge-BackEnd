@@ -15,9 +15,8 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
             status: "interested"
         }).populate("fromId", "firstName lastName age gender photoUrl about skills");
 
-        if (requestsReceived.length === 0) throw new Error("No requests Recieved");
-
-        res.send(requestsReceived);
+        if (requestsReceived.length === 0) res.send([]);
+        else res.send(requestsReceived);
     }
     catch (err) {
         res.status(500).send({ Error: err.message });
@@ -34,9 +33,8 @@ userRouter.get("/user/request/sent", userAuth, async (req, res) => {
             status: "interested"
         }).populate("toId", "firstName lastName age gender photoUrl about skills");
 
-        if (requestsSent.length === 0) throw new Error("No requests sent");
-
-        res.send(requestsSent);
+        if (requestsSent.length === 0) res.send([]);
+        else res.send(requestsSent);
     }
     catch (err) {
         res.status(500).send({ Error: err.message });
@@ -63,9 +61,8 @@ userRouter.get("/user/ignoredProfiles", userAuth, async (req, res) => {
             }
         }))
 
-        if (populatedignoredProfiles.length === 0) throw new Error("No profiles ignored");
-
-        res.send(populatedignoredProfiles);
+        if (populatedignoredProfiles.length === 0) res.send([]);
+        else res.send(populatedignoredProfiles);
     }
     catch (err) {
         res.status(500).send({ Error: err.message });
@@ -90,9 +87,8 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
             }
         }))
 
-        if (populatedConnections.length === 0) throw new Error("No connections found");
-
-        res.send(populatedConnections);
+        if (populatedConnections.length === 0) res.send([]);
+        else res.send(populatedConnections);
     }
     catch (err) {
         res.status(500).send({ Error: err.message });
@@ -120,14 +116,12 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
             _id: { $nin: Array.from(hideUsersFromFeed) }
         }).select("firstName lastName age gender photoUrl about skills");
 
-        if (usersInFeed.length === 0) throw new Error("No more new users");
-
-        res.send(usersInFeed);
+        if (usersInFeed.length === 0) res.send([]);
+        else res.send(usersInFeed);
     }
     catch (err) {
-        res.status(500).send({ Error: err.message });
+        res.status(500).send("Error: " + err.message);
     }
-
 });
 
 module.exports = { userRouter };
