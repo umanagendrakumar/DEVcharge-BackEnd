@@ -7,24 +7,31 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 authRouter.post("/signup", async (req, res) => {
-    const { firstName, lastName, emailId, password } = req.body;
+    try {
+        const { firstName, lastName, emailId, password } = req.body;
 
-    const passwordHash = await bcrypt.hash(password, 10);
+        const existingUser = await User.findOne({emailId});
+        if (existingUser) {
+            return res.status(400).send("User with this email already exists");
+        }
 
-    const user = new User({
-        firstName,
-        lastName,
-        emailId,
-        password: passwordHash,
-    });
+        const passwordHash = await bcrypt.hash(password, 10);
 
-    await user.save()
-        .then(() => {
-            res.send("User added successfully");
-        })
-        .catch((err) => {
-            res.send("Error adding user: " + err.message);
-        })
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: passwordHash,
+        });
+
+        const savedUser = await user.save();
+        const token = await jwt.sign({ _id: savedUser._id }, "privateKey", { expiresIn: "7d" });
+        res.cookie("token", token);
+        res.json({message: "User added successfully", data: savedUser});
+
+    } catch (err) {
+        res.send("Error adding user: " + err.message);
+    }
 })
 
 authRouter.post("/login", async (req, res) => {
@@ -39,21 +46,21 @@ authRouter.post("/login", async (req, res) => {
 
         if (isPasswordValid) {
 
-            const token = await jwt.sign({ _id: user._id }, "privateKey", {expiresIn: "7d"});
+            const token = await jwt.sign({ _id: user._id }, "privateKey", { expiresIn: "7d" });
             res.cookie("token", token);
-            res.send("Login successful");
+            res.send(user);
 
         } else {
             throw new Error("Invalid Credentials");
         }
     }
     catch (err) {
-        res.send("Error: " + err.message);
+        res.status(400).send("Error: " + err.message);
     }
 })
 
 authRouter.post("/logout", (req, res) => {
-    res.cookie("token", null, {expires: new Date(Date.now())});
+    res.cookie("token", null, { expires: new Date(Date.now()) });
     res.send("Logout successful");
 })
 
