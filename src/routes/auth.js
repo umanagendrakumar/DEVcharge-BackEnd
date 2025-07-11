@@ -25,7 +25,7 @@ authRouter.post("/signup", async (req, res) => {
         });
 
         const savedUser = await user.save();
-        const token = await jwt.sign({ _id: savedUser._id }, "privateKey", { expiresIn: "7d" });
+        const token = await jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         res.cookie("token", token);
         res.json({message: "User added successfully", data: savedUser});
 
@@ -46,7 +46,7 @@ authRouter.post("/login", async (req, res) => {
 
         if (isPasswordValid) {
 
-            const token = await jwt.sign({ _id: user._id }, "privateKey", { expiresIn: "7d" });
+            const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
             res.cookie("token", token);
             res.send(user);
 
