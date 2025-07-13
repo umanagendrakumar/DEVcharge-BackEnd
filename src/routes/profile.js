@@ -14,7 +14,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
     }
 });
 
-profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
+profileRouter.put("/profile/edit", userAuth, async (req, res) => {
     try {
         const loggedInUser = req.user;
 
@@ -31,8 +31,8 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
         Object.keys(req.body).forEach((key) => {
             loggedInUser[key] = req.body[key];
         })
-        loggedInUser.save()
-        res.send("Profile updated successfully");
+        await loggedInUser.save()
+        res.send(loggedInUser);
     }
     catch (err) {
         res.status(500).send("Error: " + err.message);
