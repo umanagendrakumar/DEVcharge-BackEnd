@@ -51,11 +51,12 @@ authRouter.post("/login", async (req, res) => {
         if (isPasswordValid) {
 
             const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none"
-            });
+            res.cookie("token", token,);
+            //      {
+            //     httpOnly: true,
+            //     secure: true,
+            //     sameSite: "none"
+            // });
             res.send(user);
 
         } else {
