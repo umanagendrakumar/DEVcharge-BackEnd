@@ -12,7 +12,16 @@ require("dotenv").config();
 const allowedOrigins = ["http://localhost:5173", "https://devcharge.netlify.app"];
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+        // Allow requests like Postman or curl with no origin
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            return callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
 }));
 
