@@ -13,17 +13,19 @@ const allowedOrigins = ["http://localhost:5173", "https://devcharge.netlify.app"
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests like Postman or curl with no origin
+        console.log("Origin received by CORS:", origin); // 👈 Add this
         if (!origin) return callback(null, true);
 
         if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         } else {
+            console.log("❌ CORS blocked:", origin); // 👈 Add this
             return callback(new Error("Not allowed by CORS"));
         }
     },
     credentials: true,
 }));
+
 
 app.use(express.json());
 app.use(cookieParser());
