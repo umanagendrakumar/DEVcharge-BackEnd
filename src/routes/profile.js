@@ -39,26 +39,31 @@ profileRouter.put("/profile/edit", userAuth, async (req, res) => {
     }
 });
 
-profileRouter.patch("/profile/edit/password", userAuth, async (req, res) => {
+profileRouter.patch("/profile/edit/password",  async (req, res) => {
     try {
-        const loggedInUser = req.user;
-        const oldPassword = loggedInUser.password;
-        const { newPassword, confirmNewPassword } = req.body;
+        const { emailId, newPassword, confirmNewPassword } = req.body;
+
+        const user = await User.findOne({ emailId });
+        if(!user) {
+            throw new Error("User not found with this emailId");
+        }
 
         //confirm password should be same as new password.
         if (newPassword !== confirmNewPassword) {
-            throw new Error("New password and confirm password do not match");
+            throw new Error("Passwords must match");
         }
+        
+        const oldPassword = user.password;
 
         //new password should not be same as old password.
         const isnewPasswordOldPassword = await bcrypt.compare(newPassword, oldPassword);
         if (isnewPasswordOldPassword) {
-            throw new Error("New password should not be same as old password");
+            throw new Error("New password can't be same as old one");
         }
 
         const newPasswordHash = await bcrypt.hash(newPassword, 10);
-        loggedInUser.password = newPasswordHash;
-        loggedInUser.save();
+        user.password = newPasswordHash;
+        user.save();
         res.send("Password updated successfully");
 
     }
