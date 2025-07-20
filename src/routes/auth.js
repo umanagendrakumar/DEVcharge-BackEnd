@@ -10,6 +10,10 @@ authRouter.post("/signup", async (req, res) => {
     try {
         const { firstName, lastName, emailId, password } = req.body;
 
+        if (!firstName || !lastName || !emailId || !password) 
+            return res.status(400).send("All Fields Required");
+
+
         const existingUser = await User.findOne({ emailId });
         if (existingUser) {
             return res.status(400).send("User with this email already exists");
@@ -40,6 +44,10 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
     const { emailId, password } = req.body;
+
+    if (!emailId || !password) 
+            return res.status(400).send("All Fields Required");
+
     try {
         const user = await User.findOne({ emailId });
         if (!user) {
