@@ -6,9 +6,7 @@ const chatRouter = express.Router();
 
 chatRouter.get("/chat/:targetUserId", userAuth, async (req, res) => {
     const userId = req.user._id;
-    console.log(userId);
     const targetUserId = req.params.targetUserId;
-    console.log(targetUserId);
 
     try {
         const connection = await ConnectionRequest.findOne({
